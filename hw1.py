@@ -11,9 +11,8 @@ This speeds up the tests significantly
 """
 confirmed_cases = pd.read_csv(CONFIRMED_CASES_URL, error_bad_lines=False)
 
-
-def poland_cases_by_date(day: int, month: int, year: int = 2020) -> int:
     """
+    Pierwsze
     Returns confirmed infection cases for country 'Poland' given a date.
 
     Ex.
@@ -27,13 +26,9 @@ def poland_cases_by_date(day: int, month: int, year: int = 2020) -> int:
     :param month: Month to get the cases for as an integer indexed from 1
     :return: Number of cases on a given date as an integer
     """
-    
-    # Your code goes here (remove pass)
-    pass
 
-
-def top5_countries_by_date(day: int, month: int, year: int = 2020) -> List[str]:
-    """
+      """
+      Drugie
     Returns the top 5 infected countries given a date (confirmed cases).
 
     Ex.
@@ -47,14 +42,11 @@ def top5_countries_by_date(day: int, month: int, year: int = 2020) -> List[str]:
     :param year: Month to get the countries for as an integer indexed from 1
     :return: A list of strings with the names of the coutires
     """
-
-    # Your code goes here (remove pass)
-    pass
-
-
-def no_new_cases_count(day: int, month: int, year: int = 2020) -> int:
+    
     """
-    Returns the number of countries/regions where the infection count in a given day was the same as the previous day.
+    Trzecie
+    Returns the number of countries/regions where the infection count in a given day
+    was NOT the same as the previous day.
 
     Ex.
     >>> no_new_cases_count(11, 2, 2020)
@@ -68,5 +60,33 @@ def no_new_cases_count(day: int, month: int, year: int = 2020) -> int:
     :return: Number of countries/regions where the count has not changed in a day
     """
     
-    # Your code goes here (remove pass)
-    pass
+
+  
+  
+
+def poland_cases_by_date(day: int, month: int, year: int = 2020) -> int: 
+    szukanaData = str(month)+'/'+str(day)+'/'+str(20)
+    return int(confirmed_cases[szukanaData].loc[confirmed_cases['Country/Region']=="Poland"].values[0])
+
+
+def top5_countries_by_date(day: int, month: int, year: int = 2020) -> List[str]:
+    szukanaData = str(month)+'/'+str(day)+'/'+str(20)
+    df = confirmed_cases
+    lista = df.groupby("Country/Region").sum().sort_values(by=[szukanaData], ascending=False).head(5).index
+    return list(lista.values[0:5])
+
+# Function name is wrong, read the pydoc
+def no_new_cases_count(day: int, month: int, year: int = 2020) -> int:
+    
+    import datetime 
+    dzienBadany = datetime.date(year, month, day)
+    dzienWczesniej = dzienBadany - datetime.timedelta(days=1)
+    dzienBadany = dzienBadany.strftime('%m/%d/%y').lstrip("0").replace(" 0", " ")
+    dzienWczesniej = dzienWczesniej.strftime('%m/%d/%y').lstrip("0").replace(" 0", " ")
+    if day<10:
+      dzienBadany = dzienBadany.lstrip("0").replace("/0", "/")
+      dzienWczesniej = dzienWczesniej.lstrip("0").replace("/0", "/")
+    df = confirmed_cases
+    df['delta'] = df[dzienBadany] - df[dzienWczesniej]
+    newcases = df.loc[df[dzienBadany]-df[dzienWczesniej]!=0].count()[1]
+    return int(newcases)
